@@ -1,0 +1,31 @@
+package com.sarang.codeforcesapi.controllers;
+
+import com.sarang.codeforcesapi.models.CfUser;
+import com.sarang.codeforcesapi.services.CoderforcesService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/codeforces")
+public class CodeforcesController {
+
+    @Autowired
+    private CoderforcesService coderforcesService;
+
+    @PostMapping("/users/{userHandle}")
+    public ResponseEntity<CfUser> getUser(@PathVariable String userHandle){
+        CfUser user=coderforcesService.fetchAndSaveUser(userHandle);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.notFound().build();
+
+    }
+    @GetMapping("/users")
+    public List<CfUser> getAllusers(){
+        return coderforcesService.getAllUsers();
+    }
+}

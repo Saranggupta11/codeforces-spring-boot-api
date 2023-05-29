@@ -1,0 +1,13 @@
+package com.sarang.codeforcesapi;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CodeforcesApiApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CodeforcesApiApplication.class, args);
+	}
+
+}
