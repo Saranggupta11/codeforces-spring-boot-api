@@ -40,7 +40,7 @@ class CoderforcesServiceTest {
 
     @Test
     void fetchAndSaveUserSuccess() {
-        String handle = "john123";
+        String handle = "SARANG11";
         String apiUrl = "https://codeforces.com/api/user.info?handles=" + handle;
         CodeforcesApiResponse apiResponse = new CodeforcesApiResponse();
         CfUser user = new CfUser();
