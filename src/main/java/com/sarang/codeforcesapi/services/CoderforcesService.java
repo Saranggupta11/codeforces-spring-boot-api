@@ -4,6 +4,7 @@ package com.sarang.codeforcesapi.services;
 import com.sarang.codeforcesapi.models.CfUser;
 import com.sarang.codeforcesapi.repositories.CodeforcesRepository;
 import com.sarang.codeforcesapi.utils.CodeforcesApiResponse;
+
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -21,15 +22,22 @@ public class CoderforcesService {
 
     private static final String CODEFORCES_API_URL = "https://codeforces.com/api/user.info?handles={handle}";
 
-    @Autowired
-    private CodeforcesRepository codeforcesRepository;
+    private final CodeforcesRepository codeforcesRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public CfUser fetchAndSaveUser(String handle){
+    private final RestTemplate restTemplate;
 
-        RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    public CoderforcesService(CodeforcesRepository codeforcesRepository, RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+        this.codeforcesRepository=codeforcesRepository;
+    }
+
+
+    public CfUser fetchAndSaveUser(String handle){
+//        RestTemplate restTemplate= new RestTemplate();
         String apiUrl = CODEFORCES_API_URL.replace("{handle}", handle);
         CodeforcesApiResponse res=restTemplate.getForObject(apiUrl,CodeforcesApiResponse.class);
 
@@ -79,6 +87,7 @@ public class CoderforcesService {
         Aggregation aggregation = Aggregation.newAggregation(sortOperation,groupByCity);
 
         List<Document> result=mongoTemplate.aggregate(aggregation, CfUser.class,Document.class).getMappedResults();
+
         return result;
     }
 
