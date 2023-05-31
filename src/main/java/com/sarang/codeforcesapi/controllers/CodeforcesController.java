@@ -1,9 +1,12 @@
 package com.sarang.codeforcesapi.controllers;
 
 import com.sarang.codeforcesapi.models.CfUser;
+import com.sarang.codeforcesapi.models.CfUserElastic;
+import com.sarang.codeforcesapi.services.CodeforcesElasticService;
 import com.sarang.codeforcesapi.services.CoderforcesService;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,9 @@ public class CodeforcesController {
 
     @Autowired
     private CoderforcesService coderforcesService;
+
+    @Autowired
+    private CodeforcesElasticService codeforcesElasticService;
 
     @PostMapping("/users/{userHandle}")
     public ResponseEntity<CfUser> getUser(@PathVariable String userHandle){
@@ -46,5 +52,20 @@ public List<Document> groupByCityandSortRating(){
     @GetMapping("/users/highestRankedByCity")
     public List<Document> getHighestRankedInCity(){
         return coderforcesService.getHighestRankedByCity();
+    }
+
+    @PostMapping("/elastic/users/{userHandle}")
+    public CfUserElastic getUserElastic(@PathVariable String userHandle){
+        return codeforcesElasticService.fetchAndSaveUser(userHandle);
+    }
+
+    @GetMapping("/elastic/users")
+    public Page<CfUserElastic> getElasticUsers(){
+        return codeforcesElasticService.getAllUsers();
+    }
+
+    @GetMapping("/elastic/users/name/{name}")
+    public Page<CfUserElastic> getUserByName(@PathVariable String name){
+        return codeforcesElasticService.getUserByname(name);
     }
 }
