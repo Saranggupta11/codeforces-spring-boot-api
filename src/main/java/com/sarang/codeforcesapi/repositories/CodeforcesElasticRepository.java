@@ -13,4 +13,8 @@ public interface CodeforcesElasticRepository extends ElasticsearchRepository<CfU
     @Query("{\"bool\": {\"must\": [{\"wildcard\": {\"firstName\": \"*?0*\"}}]}}")
     Page<CfUserElastic> searchByName(String name, Pageable pageable);
 
+
+
+
+
 }

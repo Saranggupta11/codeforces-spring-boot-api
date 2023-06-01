@@ -28,4 +28,7 @@ public class CfUserElastic {
     private int maxRating;
     private long registrationTimeSeconds;
     private String maxRank;
+
+    public void setCount(long docCount) {
+    }
 }

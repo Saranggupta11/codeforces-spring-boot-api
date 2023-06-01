@@ -4,9 +4,13 @@ import com.sarang.codeforcesapi.models.CfUser;
 import com.sarang.codeforcesapi.models.CfUserElastic;
 import com.sarang.codeforcesapi.services.CodeforcesElasticService;
 import com.sarang.codeforcesapi.services.CoderforcesService;
+import com.sarang.codeforcesapi.utils.SearchHitsWrapper;
+import com.sarang.codeforcesapi.utils.SearchPageWrapper;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,4 +72,13 @@ public List<Document> groupByCityandSortRating(){
     public Page<CfUserElastic> getUserByName(@PathVariable String name){
         return codeforcesElasticService.getUserByname(name);
     }
+    @GetMapping("/elastic/users/byRatingAsc")
+    public SearchHitsWrapper<CfUserElastic> sortByRatingAsc(){
+        return codeforcesElasticService.sortByRatingAsc();
+    }
+    @GetMapping("/elastic/users/byCountry")
+    public SearchHitsWrapper<CfUserElastic> aggregateByCountry(){
+        return codeforcesElasticService.aggregateCountriesAndCities();
+    }
+
 }

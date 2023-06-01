@@ -7,22 +7,19 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "com.sarang.codeforcesapi.repositories")
 @ComponentScan(basePackages = { "com.sarang.codeforcesapi.services" })
-public class ElasticConfig extends AbstractElasticsearchConfiguration {
+public class ElasticConfig extends ElasticsearchConfiguration {
 
-    @Bean
     @Override
-    public RestHighLevelClient elasticsearchClient() {
-        ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+    public ClientConfiguration clientConfiguration() {
+        return ClientConfiguration.builder()
                 .connectedTo("localhost:9200")
                 .build();
-
-        return RestClients.create(clientConfiguration)
-                .rest();
     }
 }
