@@ -19,3 +19,15 @@ fetches the highest ranked programmer in a city
 
 GET http://localhost:8080/codeforces/users/byCityDescRating
 groups the users by city and sorts them in decreasing order
+
+POST http://localhost:8080/codeforces/elastic/users/{userHandle}
+fetches data from codeforces api and add the user to elastic search
+
+GET http://localhost:8080/codeforces/elastic/users
+get all the users from the elasticsearch
+
+GET http://localhost:8080/codeforces/elastic/users/name/{nameSubstring}
+get all the users from elastic search that contains the nameSubstring in their firstName
+
+
+
