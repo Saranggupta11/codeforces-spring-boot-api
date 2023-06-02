@@ -32,3 +32,8 @@ get all the users from elastic search that contains the nameSubstring in their f
 GET http://localhost:8080/codeforces/elastic/users/byRatingAsc
 get all the users sorted by their rating in ascending order
 
+GET http://localhost:8080/codeforces/elastic/users/highestByCountry/{countryName}
+gets the highest rated coder in the country by countryName
+
+GET http://localhost:8080/codeforces/elastic/users/dateHistogram
+gets all the users with rating > 1900 on that particular date
