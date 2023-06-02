@@ -1,19 +1,19 @@
 package com.sarang.codeforcesapi.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sarang.codeforcesapi.models.CfUser;
 import com.sarang.codeforcesapi.models.CfUserElastic;
 import com.sarang.codeforcesapi.services.CodeforcesElasticService;
 import com.sarang.codeforcesapi.services.CoderforcesService;
-import com.sarang.codeforcesapi.utils.SearchHitsWrapper;
-import com.sarang.codeforcesapi.utils.SearchPageWrapper;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -59,7 +59,7 @@ public List<Document> groupByCityandSortRating(){
     }
 
     @PostMapping("/elastic/users/{userHandle}")
-    public CfUserElastic getUserElastic(@PathVariable String userHandle){
+    public CfUserElastic getUserElastic(@PathVariable String userHandle) throws ParseException {
         return codeforcesElasticService.fetchAndSaveUser(userHandle);
     }
 
@@ -68,17 +68,27 @@ public List<Document> groupByCityandSortRating(){
         return codeforcesElasticService.getAllUsers();
     }
 
+    @DeleteMapping("/elastic/users")
+    public void deleteAllUsers(){
+        codeforcesElasticService.deleteAllusers();
+    }
+
     @GetMapping("/elastic/users/name/{name}")
     public Page<CfUserElastic> getUserByName(@PathVariable String name){
         return codeforcesElasticService.getUserByname(name);
     }
     @GetMapping("/elastic/users/byRatingAsc")
-    public SearchHitsWrapper<CfUserElastic> sortByRatingAsc(){
+    public List<CfUserElastic> sortByRating() throws IOException {
         return codeforcesElasticService.sortByRatingAsc();
     }
-    @GetMapping("/elastic/users/byCountry")
-    public SearchHitsWrapper<CfUserElastic> aggregateByCountry(){
-        return codeforcesElasticService.aggregateCountriesAndCities();
+    @GetMapping("/elastic/users/highestByCountry/{countryName}")
+    public CfUserElastic aggregateByCountry(@PathVariable String countryName){
+        return codeforcesElasticService.getHighestRatedCoderByCountry(countryName);
+    }
+
+    @GetMapping("/elastic/users/dateHistogram")
+    public List<CfUserElastic> dateHistogram()  {
+        return codeforcesElasticService.dateHistogram();
     }
 
 }

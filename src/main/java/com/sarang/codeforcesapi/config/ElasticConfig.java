@@ -1,6 +1,8 @@
-package config;
+package com.sarang.codeforcesapi.config;
 
 
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,7 +17,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @EnableElasticsearchRepositories(basePackages = "com.sarang.codeforcesapi.repositories")
 @ComponentScan(basePackages = { "com.sarang.codeforcesapi.services" })
 public class ElasticConfig extends ElasticsearchConfiguration {
-
     @Override
     public ClientConfiguration clientConfiguration() {
         return ClientConfiguration.builder()
