@@ -29,5 +29,6 @@ get all the users from the elasticsearch
 GET http://localhost:8080/codeforces/elastic/users/name/{nameSubstring}
 get all the users from elastic search that contains the nameSubstring in their firstName
 
-
+GET http://localhost:8080/codeforces/elastic/users/byRatingAsc
+get all the users sorted by their rating in ascending order
 
