@@ -8,13 +8,10 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CodeforcesElasticRepository extends ElasticsearchRepository<CfUserElastic,String> {
+public interface CodeforcesElasticRepository extends ElasticsearchRepository<CfUserElastic, String> {
 
     @Query("{\"bool\": {\"must\": [{\"wildcard\": {\"firstName\": \"*?0*\"}}]}}")
     Page<CfUserElastic> searchByName(String name, Pageable pageable);
-
-
-
 
 
 }

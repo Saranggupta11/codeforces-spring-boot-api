@@ -1,5 +1,6 @@
 package com.sarang.codeforcesapi.utils;
 
+
 import com.sarang.codeforcesapi.models.CfUserElastic;
 import lombok.Getter;
 import lombok.Setter;

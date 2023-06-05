@@ -1,8 +1,6 @@
 package com.sarang.codeforcesapi.utils;
 
-import com.sarang.codeforcesapi.models.CfUserElastic;
 import lombok.*;
-
 import java.util.List;
 
 @Getter
@@ -10,8 +8,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiResponse {
+public class ApiResponse<T> {
     private boolean success;
     private String message;
-    private List<CfUserElastic> users;
+    private List<T> users;
 }

@@ -28,64 +28,63 @@ public class CoderforcesService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public CoderforcesService(CodeforcesRepository codeforcesRepository, RestTemplate restTemplate,MongoTemplate mongoTemplate) {
-        this.mongoTemplate=mongoTemplate;
+    public CoderforcesService(CodeforcesRepository codeforcesRepository, RestTemplate restTemplate, MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
         this.restTemplate = restTemplate;
-        this.codeforcesRepository=codeforcesRepository;
+        this.codeforcesRepository = codeforcesRepository;
     }
 
 
-    public CfUser fetchAndSaveUser(String handle){
-//        RestTemplate restTemplate= new RestTemplate();
-        String apiUrl = CODEFORCES_API_URL.replace("{handle}", handle);
-        CodeforcesApiResponse res=restTemplate.getForObject(apiUrl,CodeforcesApiResponse.class);
+    public CfUser fetchAndSaveUser(String handle) throws Exception {
+        try {
+            String apiUrl = CODEFORCES_API_URL.replace("{handle}", handle);
+            CodeforcesApiResponse res = restTemplate.getForObject(apiUrl, CodeforcesApiResponse.class);
 
-        CfUser user = null;
-        if (res != null) {
-            user = res.getResult()[0];
+            if (res != null && res.getResult().length > 0) {
+                CfUser user = res.getResult()[0];
+                return codeforcesRepository.save(user);
+            }
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
-
-        if (user != null) {
-            return codeforcesRepository.save(user);
-        }
-
         return null;
-
-
     }
-    public List<CfUser> getAllUsers(){
+
+    public List<CfUser> getAllUsers() {
         return codeforcesRepository.findAll();
     }
 
-    public List<Document> sortUserByRatingDesc(){
-        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC,"rating");
+    public List<Document> sortUserByRatingDesc() {
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "rating");
         Aggregation aggregation = Aggregation.newAggregation(sortOperation);
-        List<Document> result=mongoTemplate.aggregate(aggregation,CfUser.class,Document.class).getMappedResults();
-        return result ;
-    }
-
-    public List<Document> groupUsersByCity(){
-        GroupOperation groupOperation= Aggregation.group("city").count().as("count").push("$$ROOT").as("users");
-        Aggregation aggregation = Aggregation.newAggregation(groupOperation);
-        List<Document> result=mongoTemplate.aggregate(aggregation,CfUser.class,Document.class).getMappedResults();
-        return result ;
-    }
-    public List<Document> groupByCityandSortByrating(){
-        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC,"rating");
-        GroupOperation groupByCity = Aggregation.group("city").push("$$ROOT").as("users");
-
-        Aggregation aggregation = Aggregation.newAggregation(sortOperation,groupByCity);
-
-        List<Document> result=mongoTemplate.aggregate(aggregation, CfUser.class,Document.class).getMappedResults();
+        List<Document> result = mongoTemplate.aggregate(aggregation, CfUser.class, Document.class).getMappedResults();
         return result;
     }
-    public List<Document> getHighestRankedByCity(){
-        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC,"rating");
+
+    public List<Document> groupUsersByCity() {
+        GroupOperation groupOperation = Aggregation.group("city").count().as("count").push("$$ROOT").as("users");
+        Aggregation aggregation = Aggregation.newAggregation(groupOperation);
+        List<Document> result = mongoTemplate.aggregate(aggregation, CfUser.class, Document.class).getMappedResults();
+        return result;
+    }
+
+    public List<Document> groupByCityandSortByrating() {
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "rating");
+        GroupOperation groupByCity = Aggregation.group("city").push("$$ROOT").as("users");
+
+        Aggregation aggregation = Aggregation.newAggregation(sortOperation, groupByCity);
+
+        List<Document> result = mongoTemplate.aggregate(aggregation, CfUser.class, Document.class).getMappedResults();
+        return result;
+    }
+
+    public List<Document> getHighestRankedByCity() {
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "rating");
         GroupOperation groupByCity = Aggregation.group("city").first(Aggregation.ROOT).as("highest_ranked");
 
-        Aggregation aggregation = Aggregation.newAggregation(sortOperation,groupByCity);
+        Aggregation aggregation = Aggregation.newAggregation(sortOperation, groupByCity);
 
-        List<Document> result=mongoTemplate.aggregate(aggregation, CfUser.class,Document.class).getMappedResults();
+        List<Document> result = mongoTemplate.aggregate(aggregation, CfUser.class, Document.class).getMappedResults();
 
         return result;
     }

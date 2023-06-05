@@ -10,7 +10,6 @@ import com.sarang.codeforcesapi.utils.ApiResponse;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -32,12 +31,19 @@ public class CodeforcesController {
     }
 
     @PostMapping("/users/{userHandle}")
-    public ResponseEntity<CfUser> getUser(@PathVariable String userHandle) {
-        CfUser user = coderforcesService.fetchAndSaveUser(userHandle);
-        if (user != null) {
-            return ResponseEntity.ok(user);
+    public ApiResponse<CfUser> getUser(@PathVariable String userHandle) {
+        CfUser user = null;
+        try {
+            user = coderforcesService.fetchAndSaveUser(userHandle);
+        } catch (Exception e) {
+            return new ApiResponse<CfUser>(false, e.getMessage(), null);
         }
-        return ResponseEntity.notFound().build();
+        if (user != null) {
+            List<CfUser> list = new ArrayList<>();
+            list.add(user);
+            return new ApiResponse<CfUser>(true, "User fetched and saved successfully successfully", list);
+        }
+        return new ApiResponse<CfUser>(false, "error occurred not able to fech and save user", null);
 
     }
 
@@ -67,15 +73,36 @@ public class CodeforcesController {
     }
 
     public JsonNode parseJson(String jsonString) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readTree(jsonString);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(jsonString);
+        } catch (Exception e) {
+            throw new Exception("Failed to parse JSON: " + e.getMessage());
+        }
     }
 
     @PostMapping("/elastic/users/{userHandle}")
-    public CfUserElastic getUserElastic(@PathVariable String userHandle, @RequestBody String requestBody) throws Exception {
-        JsonNode jsonBody = parseJson(requestBody);
+    public ApiResponse<CfUserElastic> fetchAndSaveUserElastic(@PathVariable String userHandle, @RequestBody String requestBody) {
+        JsonNode jsonBody = null;
+        try {
+            jsonBody = parseJson(requestBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert jsonBody != null;
         String date = jsonBody.get("date").asText();
-        return codeforcesElasticService.fetchAndSaveUser(userHandle, date);
+        CfUserElastic user = null;
+        try {
+            user = codeforcesElasticService.fetchAndSaveUser(userHandle, date);
+        } catch (Exception e) {
+            return new ApiResponse<CfUserElastic>(false, e.getMessage(), null);
+        }
+        if (user != null) {
+            List<CfUserElastic> list = new ArrayList<>();
+            list.add(user);
+            return new ApiResponse<CfUserElastic>(true, "User fetched and saved successfully successfully", list);
+        }
+        return new ApiResponse<CfUserElastic>(false, "error occurred not able to fech and save user", null);
     }
 
     @GetMapping("/elastic/users")
@@ -90,12 +117,12 @@ public class CodeforcesController {
     }
 
     @GetMapping("/elastic/users/name/{name}")
-    public ApiResponse getUserByName(@PathVariable String name,@RequestParam(name = "page", defaultValue = "0") int pageNumber, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        List<CfUserElastic>users=codeforcesElasticService.getUserByName(name,pageNumber,pageSize);
-        if(!users.isEmpty()){
-            return new ApiResponse(true,"users fetched successfully",users);
+    public ApiResponse<CfUserElastic> getUserByName(@PathVariable String name, @RequestParam(name = "page", defaultValue = "0") int pageNumber, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
+        List<CfUserElastic> users = codeforcesElasticService.getUserByName(name, pageNumber, pageSize);
+        if (!users.isEmpty()) {
+            return new ApiResponse<CfUserElastic>(true, "users fetched successfully", users);
         }
-        return new ApiResponse(false,"no users found",users);
+        return new ApiResponse<CfUserElastic>(false, "no users found", users);
     }
 
     @GetMapping("/elastic/users/byRatingAsc")
@@ -104,24 +131,24 @@ public class CodeforcesController {
     }
 
     @GetMapping("/elastic/users/highestByCountry/{countryName}")
-    public ApiResponse aggregateByCountry(@PathVariable String countryName) {
-        CfUserElastic user=codeforcesElasticService.getHighestRatedCoderByCountry(countryName);
-        if (user!=null) {
+    public ApiResponse<CfUserElastic> aggregateByCountry(@PathVariable String countryName) {
+        CfUserElastic user = codeforcesElasticService.getHighestRatedCoderByCountry(countryName);
+        if (user != null) {
             List<CfUserElastic> list = new ArrayList<>();
             list.add(user);
-            return new ApiResponse(true,"User fetched successfully",list);
+            return new ApiResponse<CfUserElastic>(true, "User fetched successfully", list);
         }
-        return new ApiResponse(false,"No users found",null);
+        return new ApiResponse<CfUserElastic>(false, "No users found", null);
     }
 
     @GetMapping("/elastic/users/dateHistogram/{rating}")
-    public ApiResponse dateHistogram(@PathVariable int rating,@RequestParam(name = "page", defaultValue = "0") int pageNumber, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        List<CfUserElastic> users= codeforcesElasticService.getUsersGreaterThanRatingOnaDate(rating,pageNumber,pageSize);
+    public ApiResponse<CfUserElastic> dateHistogram(@PathVariable int rating, @RequestParam(name = "page", defaultValue = "0") int pageNumber, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
+        List<CfUserElastic> users = codeforcesElasticService.getUsersGreaterThanRatingOnaDate(rating, pageNumber, pageSize);
 
-        if(users!=null){
-            return new ApiResponse(true,"users fetched successfully for rating greater than "+ rating,users);
+        if (users != null) {
+            return new ApiResponse<CfUserElastic>(true, "users fetched successfully for rating greater than " + rating, users);
         }
-        return new ApiResponse(false,"No users found for rating greater than "+rating,null);
+        return new ApiResponse<CfUserElastic>(false, "No users found for rating greater than " + rating, null);
     }
 
 }

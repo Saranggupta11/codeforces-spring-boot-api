@@ -39,7 +39,7 @@ class CoderforcesServiceTest {
 
 
     @Test
-    void fetchAndSaveUserSuccess() {
+    void fetchAndSaveUserSuccess() throws Exception {
         String handle = "SARANG11";
         String apiUrl = "https://codeforces.com/api/user.info?handles=" + handle;
         CodeforcesApiResponse apiResponse = new CodeforcesApiResponse();
@@ -73,7 +73,7 @@ class CoderforcesServiceTest {
     }
 
     @Test
-    void fetchAndSaveUserNull() {
+    void fetchAndSaveUserNull() throws Exception {
         String handle = "john123";
         String apiUrl = "https://codeforces.com/api/user.info?handles=" + handle;
         when(restTemplate.getForObject(apiUrl, CodeforcesApiResponse.class)).thenReturn(null);
