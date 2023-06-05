@@ -22,11 +22,15 @@ groups the users by city and sorts them in decreasing order
 
 POST http://localhost:8080/codeforces/elastic/users/{userHandle}
 fetches data from codeforces api and add the user to elastic search
+REQUEST BODY EXAMPLE
+{
+    "date":"04/06/2023"
+}
 
-GET http://localhost:8080/codeforces/elastic/users
+GET http://localhost:8080/codeforces/elastic/users?page=pageNumber&size=pageSize
 get all the users from the elasticsearch
 
-GET http://localhost:8080/codeforces/elastic/users/name/{nameSubstring}
+GET http://localhost:8080/codeforces/elastic/users/name/{nameSubstring}?page=pageNumber&size=pageSize
 get all the users from elastic search that contains the nameSubstring in their firstName
 
 GET http://localhost:8080/codeforces/elastic/users/byRatingAsc
@@ -35,5 +39,5 @@ get all the users sorted by their rating in ascending order
 GET http://localhost:8080/codeforces/elastic/users/highestByCountry/{countryName}
 gets the highest rated coder in the country by countryName
 
-GET http://localhost:8080/codeforces/elastic/users/dateHistogram
-gets all the users with rating > 1900 on that particular date
+GET http://localhost:8080/codeforces/elastic/users/dateHistogram{rating}?page=pageNumber&size=pageSize
+gets all the users with rating > {rating} on that particular date
