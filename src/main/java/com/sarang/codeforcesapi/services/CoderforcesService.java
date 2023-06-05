@@ -4,7 +4,6 @@ package com.sarang.codeforcesapi.services;
 import com.sarang.codeforcesapi.models.CfUser;
 import com.sarang.codeforcesapi.repositories.CodeforcesRepository;
 import com.sarang.codeforcesapi.utils.CodeforcesApiResponse;
-
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,13 +23,13 @@ public class CoderforcesService {
 
     private final CodeforcesRepository codeforcesRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final RestTemplate restTemplate;
 
     @Autowired
-    public CoderforcesService(CodeforcesRepository codeforcesRepository, RestTemplate restTemplate) {
+    public CoderforcesService(CodeforcesRepository codeforcesRepository, RestTemplate restTemplate,MongoTemplate mongoTemplate) {
+        this.mongoTemplate=mongoTemplate;
         this.restTemplate = restTemplate;
         this.codeforcesRepository=codeforcesRepository;
     }
