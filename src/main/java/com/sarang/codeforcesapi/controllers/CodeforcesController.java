@@ -83,27 +83,39 @@ public class CodeforcesController {
 
     @PostMapping("/elastic/users/{userHandle}")
     public ApiResponse<CfUserElastic> fetchAndSaveUserElastic(@PathVariable String userHandle, @RequestBody String requestBody) {
+        if (requestBody == null) {
+            return new ApiResponse<>(false, "Request body is null", null);
+        }
         JsonNode jsonBody = null;
         try {
             jsonBody = parseJson(requestBody);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assert jsonBody != null;
+        if (jsonBody == null || !jsonBody.has("date") || jsonBody.get("date").isNull()) {
+            return new ApiResponse<>(false, "missing 'date' field in the request body", null);
+        }
         String date = jsonBody.get("date").asText();
+        if (date.isEmpty()) {
+            return new ApiResponse<>(false, "Date field is empty", null);
+        }
+
         CfUserElastic user = null;
         try {
             user = codeforcesElasticService.fetchAndSaveUser(userHandle, date);
         } catch (Exception e) {
-            return new ApiResponse<CfUserElastic>(false, e.getMessage(), null);
+            return new ApiResponse<>(false, e.getMessage(), null);
         }
+
         if (user != null) {
             List<CfUserElastic> list = new ArrayList<>();
             list.add(user);
-            return new ApiResponse<CfUserElastic>(true, "User fetched and saved successfully successfully", list);
+            return new ApiResponse<>(true, "User fetched and saved successfully", list);
         }
-        return new ApiResponse<CfUserElastic>(false, "error occurred not able to fech and save user", null);
+
+        return new ApiResponse<>(false, "Failed to fetch and save user", null);
     }
+
 
     @GetMapping("/elastic/users")
     public Page<CfUserElastic> getElasticUsers(@RequestParam(name = "page", defaultValue = "0") int pageNumber, @RequestParam(name = "size", defaultValue = "10") int pageSize) {
@@ -122,7 +134,7 @@ public class CodeforcesController {
         if (!users.isEmpty()) {
             return new ApiResponse<CfUserElastic>(true, "users fetched successfully", users);
         }
-        return new ApiResponse<CfUserElastic>(false, "no users found", users);
+        return new ApiResponse<CfUserElastic>(true, "no users found", users);
     }
 
     @GetMapping("/elastic/users/byRatingAsc")
@@ -138,7 +150,7 @@ public class CodeforcesController {
             list.add(user);
             return new ApiResponse<CfUserElastic>(true, "User fetched successfully", list);
         }
-        return new ApiResponse<CfUserElastic>(false, "No users found", null);
+        return new ApiResponse<CfUserElastic>(false ,"No users found or please enter a valid country", null);
     }
 
     @GetMapping("/elastic/users/dateHistogram/{rating}")
@@ -148,7 +160,7 @@ public class CodeforcesController {
         if (users != null) {
             return new ApiResponse<CfUserElastic>(true, "users fetched successfully for rating greater than " + rating, users);
         }
-        return new ApiResponse<CfUserElastic>(false, "No users found for rating greater than " + rating, null);
+        return new ApiResponse<CfUserElastic>(true, "No users found for rating greater than " + rating, null);
     }
 
 }
