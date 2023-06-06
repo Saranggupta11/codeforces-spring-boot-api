@@ -2,6 +2,8 @@ package com.sarang.codeforcesapi.services;
 
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.json.JsonData;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sarang.codeforcesapi.models.CfUserElastic;
 import com.sarang.codeforcesapi.repositories.CodeforcesElasticRepository;
 import com.sarang.codeforcesapi.utils.CodeforcesApiResponseElastic;
@@ -15,9 +17,14 @@ import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -118,6 +125,51 @@ public class CodeforcesElasticService {
         }
 
     }
+
+    public JsonNode parseJson(String jsonString) throws Exception {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(jsonString);
+        } catch (Exception e) {
+            throw new Exception("Failed to parse JSON: " + e.getMessage());
+        }
+    }
+    public String dateAggregation(){
+        String url = "http://localhost:9200/codeforces/_search";
+        String requestBody = "{\n" +
+                "  \"query\": {\n" +
+                "    \"range\": {\n" +
+                "      \"rating\": {\n" +
+                "        \"gte\": 1900\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"aggs\": {\n" +
+                "    \"dates\": {\n" +
+                "      \"terms\": {\n" +
+                "        \"field\": \"date\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        CompletableFuture<HttpResponse<String>> responseFuture = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        String responseBody = responseFuture.thenApply(HttpResponse::body).join();
+        System.out.println(responseBody);
+        return responseBody;
+    }
+
+
+
+
 
 
 }

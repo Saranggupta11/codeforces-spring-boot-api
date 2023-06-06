@@ -163,4 +163,12 @@ public class CodeforcesController {
         return new ApiResponse<CfUserElastic>(true, "No users found for rating greater than " + rating, null);
     }
 
+    @GetMapping("/elastic/test")
+    public JsonNode test() throws Exception {
+        String response=codeforcesElasticService.dateAggregation();
+        JsonNode jsonNode=parseJson(response);
+        return jsonNode.get("aggregations");
+
+    }
+
 }
