@@ -125,15 +125,6 @@ public class CodeforcesElasticService {
         }
 
     }
-
-    public JsonNode parseJson(String jsonString) throws Exception {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(jsonString);
-        } catch (Exception e) {
-            throw new Exception("Failed to parse JSON: " + e.getMessage());
-        }
-    }
     public String dateAggregation(){
         String url = "http://localhost:9200/codeforces/_search";
         String requestBody = "{\n" +
