@@ -125,13 +125,13 @@ public class CodeforcesElasticService {
         }
 
     }
-    public String dateAggregation(){
+    public String dateAggregation(int rating){
         String url = "http://localhost:9200/codeforces/_search";
         String requestBody = "{\n" +
                 "  \"query\": {\n" +
                 "    \"range\": {\n" +
                 "      \"rating\": {\n" +
-                "        \"gte\": 1900\n" +
+                "        \"gte\":"+rating+"\n" +
                 "      }\n" +
                 "    }\n" +
                 "  },\n" +
